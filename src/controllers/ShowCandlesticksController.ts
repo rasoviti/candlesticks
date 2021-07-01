@@ -1,15 +1,25 @@
-import { Request, Response } from "express"
+import { Request, Response } from "express";
 import { CreateCandlestickService } from "../services/CreateCandlestickService";
 
 const api = require("../api/poloniex");
 
 class ShowCandlestickController {
-
   async handle(request: Request, response: Response) {
     let i = 0;
     let moeda = 'BTC_BTS';
+    
+    if(request.query.moeda != undefined) {
+      moeda = request.query.moeda.toString();
+    }
+    
     let date = new Date();
     let { data } = await api.get();
+
+    if(data[moeda] == undefined){
+      return response.status(400).json({
+        error: "Não foi possível obter dados da moeda solicitada! Por favor, entre com uma moeda válida...",
+      })
+    }
 
     let candlestick_one = {
       moeda: moeda,
@@ -20,7 +30,7 @@ class ShowCandlestickController {
       high: data[moeda]['highestBid'],
       close: data[moeda]['last'],
     };
-
+    
     let candlestick_five = {
       moeda: moeda,
       periodicidade: '5',
