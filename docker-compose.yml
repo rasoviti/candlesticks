@@ -5,7 +5,7 @@ services:
     restart: unless-stopped
     container_name: mysql-container
     command: --default-authentication-plugin=mysql_native_password
-    command: mysql -h db -u user database < script.sql
+    command: --init-file /data/application/init.sql
     environment:
       MYSQL_DATABASE: 'db_candlesticks'
       MYSQL_USER: 'user'
@@ -16,7 +16,14 @@ services:
     expose:
       - '3307'
     volumes:
-      - /my-db:/var/lib/mysql
+      - ./init.sql:/data/application/init.sql
+    healthcheck:
+      test: "/usr/bin/mysql --user=nayara --password=123456 --execute \"SHOW DATABASES;\""
+      timeout: 10s
+      interval: 10s
+      retries: 5
+    networks: 
+      - default
   
   node:
     build: .
@@ -25,6 +32,3 @@ services:
       - "3000:3000"
     depends_on:
       - db
-
-volumes:
-  my-db:

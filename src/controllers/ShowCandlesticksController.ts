@@ -4,6 +4,7 @@ import { CreateCandlestickService } from "../services/CreateCandlestickService";
 const api = require("../api/poloniex");
 
 class ShowCandlestickController {
+
   async handle(request: Request, response: Response) {
     let i = 0;
     let moeda = 'BTC_BTS';
